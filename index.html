@@ -203,16 +203,20 @@
             <div class="cta-content">
                 <h2>未来の制作を、今すぐ体験する</h2>
                 <p>無料相談では、貴社のビジネス課題をヒアリングし、<br>AIによる最適なソリューションをご提案します。</p>
-                <form class="contact-form">
+                <form class="contact-form" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+                    <input type="hidden" name="form-name" value="contact">
+                    <p style="display: none;">
+                        <label>Don't fill this out if you're human: <input name="bot-field" /></label>
+                    </p>
                     <div class="form-row">
-                        <input type="text" placeholder="会社名" required>
-                        <input type="text" placeholder="お名前" required>
+                        <input type="text" name="company" placeholder="会社名" required>
+                        <input type="text" name="name" placeholder="お名前" required>
                     </div>
                     <div class="form-row">
-                        <input type="email" placeholder="メールアドレス" required>
-                        <input type="tel" placeholder="電話番号">
+                        <input type="email" name="email" placeholder="メールアドレス" required>
+                        <input type="tel" name="phone" placeholder="電話番号">
                     </div>
-                    <textarea placeholder="ご相談内容（任意）" rows="4"></textarea>
+                    <textarea name="message" placeholder="ご相談内容（任意）" rows="4"></textarea>
                     <button type="submit" class="btn btn-primary btn-large">無料相談を申し込む</button>
                 </form>
                 <p class="form-note">※通常24時間以内にご返信いたします</p>

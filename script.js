@@ -42,18 +42,69 @@ window.addEventListener('scroll', () => {
 // Form submission handler
 const contactForm = document.querySelector('.contact-form');
 if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
+    contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        // Get form data
-        const formData = new FormData(contactForm);
+        const submitButton = contactForm.querySelector('button[type="submit"]');
+        const originalButtonText = submitButton.textContent;
         
-        // Show success message (in production, this would send to a server)
-        alert('お問い合わせありがとうございます。\n担当者より24時間以内にご連絡させていただきます。');
-        
-        // Reset form
-        contactForm.reset();
+        try {
+            // Disable button and show loading state
+            submitButton.disabled = true;
+            submitButton.textContent = '送信中...';
+            
+            // Get form data
+            const formData = new FormData(contactForm);
+            
+            // Submit form to Netlify
+            const response = await fetch('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(formData).toString()
+            });
+            
+            if (response.ok) {
+                // Show success message
+                showFormMessage('success', 'お問い合わせありがとうございます。\n担当者より24時間以内にご連絡させていただきます。');
+                
+                // Reset form
+                contactForm.reset();
+            } else {
+                throw new Error('Form submission failed');
+            }
+        } catch (error) {
+            console.error('Form submission error:', error);
+            showFormMessage('error', '送信に失敗しました。\nしばらくしてからもう一度お試しください。');
+        } finally {
+            // Re-enable button
+            submitButton.disabled = false;
+            submitButton.textContent = originalButtonText;
+        }
     });
+}
+
+// Helper function to show form messages
+function showFormMessage(type, message) {
+    // Remove any existing message
+    const existingMessage = document.querySelector('.form-message');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
+    
+    // Create message element
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `form-message form-message-${type}`;
+    messageDiv.textContent = message;
+    messageDiv.style.whiteSpace = 'pre-line';
+    
+    // Insert after form
+    contactForm.parentNode.insertBefore(messageDiv, contactForm.nextSibling);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        messageDiv.style.opacity = '0';
+        setTimeout(() => messageDiv.remove(), 300);
+    }, 5000);
 }
 
 // Intersection Observer for animation on scroll
